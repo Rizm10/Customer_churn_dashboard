@@ -7,8 +7,7 @@ from style import (
 )
 from chart_styles import (
     churn_distribution_chart, churn_bycontract_chart,
-    monthly_charges_chart, tenure_distribution_chart,
-    internet_service_churn_chart
+    monthly_charges_chart, internet_service_churn_chart
 )
 from model_training import train_and_select_best_model, retrain_best_model
 from kpi import (
@@ -28,7 +27,6 @@ def main():
     st.markdown("This dashboard provides insights into customer churn using machine learning models.")
     st.sidebar.title("Navigation")
 
-    # File path input
     file_path = st.sidebar.text_input("Enter the path to the dataset:", "Telco-Customer-Churn.csv")
 
     # Load Data
@@ -45,20 +43,20 @@ def main():
 
     # KPIs
     st.sidebar.markdown("### Key Performance Indicators (KPIs)")
-
     if "df" in st.session_state:
         df = st.session_state["df"]
-
         if st.sidebar.button("Show KPIs"):
             try:
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Churn Rate", f"{churn_rate_kpi(df):.2f}%")
-                col2.metric("Avg Tenure", f"{average_tenure_kpi(df):.2f} months")
-                col3.metric("Avg Monthly Charges", f"${average_monthly_charges_kpi(df):.2f}")
+                with st.container():
+                    st.markdown("### 📌 Key Performance Indicators")
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("Churn Rate", f"{churn_rate_kpi(df):.2f}%")
+                    col2.metric("Avg Tenure", f"{average_tenure_kpi(df):.2f} months")
+                    col3.metric("Avg Monthly Charges", f"${average_monthly_charges_kpi(df):.2f}")
 
-                col4, col5 = st.columns(2)
-                col4.metric("Total Customers", total_customers_kpi(df))
-                col5.metric("Retention Rate", f"{customer_retention_kpi(df):.2f}%")
+                    col4, col5 = st.columns(2)
+                    col4.metric("Total Customers", total_customers_kpi(df))
+                    col5.metric("Retention Rate", f"{customer_retention_kpi(df):.2f}%")
             except Exception as e:
                 st.error(f"Error displaying KPIs: {e}")
     else:
@@ -102,7 +100,7 @@ def main():
     # Retrain Model
     st.sidebar.markdown("### Model Retraining")
     if st.sidebar.button("Retrain Best Model"):
-        if "df" in st.session_state:
+        if "model" in st.session_state:
             try:
                 retrain_best_model(file_path)
                 st.success("Best model retrained successfully.")
