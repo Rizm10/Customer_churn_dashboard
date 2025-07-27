@@ -1,0 +1,19 @@
+
+# Core Libraries
+numpy==1.24.4
+pandas==2.0.3
+scikit-learn==1.3.2
+xgboost==1.7.6
+joblib==1.3.2
+
+# SHAP for explainability (optional if not used)
+shap==0.43.0
+
+# Visualization
+plotly==5.18.0
+matplotlib==3.7.3
+seaborn==0.12.2
+
+# Streamlit
+streamlit==1.28.2
+pyarrow==12.0.1
