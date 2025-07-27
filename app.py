@@ -57,12 +57,12 @@ def main():
                 col3.metric("Avg Monthly Charges", f"${average_monthly_charges_kpi(df):.2f}")
 
                 col4, col5 = st.columns(2)
-                col4.metric("Total Customers", f"{total_customers_kpi(df)}")
+                col4.metric("Total Customers", total_customers_kpi(df))
                 col5.metric("Retention Rate", f"{customer_retention_kpi(df):.2f}%")
             except Exception as e:
                 st.error(f"Error displaying KPIs: {e}")
     else:
-        st.sidebar.warning("Load the data first to view KPIs.")
+        st.sidebar.warning("⚠️ Load the data first to view KPIs.")
 
     # Charts
     st.sidebar.markdown("### Charts")
@@ -99,19 +99,19 @@ def main():
         except Exception as e:
             st.error(f"Error rendering selected charts: {e}")
     else:
-        st.sidebar.warning("Load the data first to display charts.")
+        st.sidebar.warning("⚠️ Load the data first to display charts.")
 
     # Retrain Model
     st.sidebar.markdown("### Model Retraining")
     if st.sidebar.button("Retrain Best Model"):
-        if "model" in st.session_state:
+        if "df" in st.session_state:
             try:
                 retrain_best_model(file_path)
                 st.success("Best model retrained successfully.")
             except Exception as e:
                 st.error(f"Error retraining model: {e}")
         else:
-            st.warning("Load the model before retraining.")
+            st.warning("⚠️ Load the model before retraining.")
 
 if __name__ == "__main__":
     main()
