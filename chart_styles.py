@@ -97,21 +97,6 @@ def monthly_charges_chart(df):
     fig.update_yaxes(title_text="Monthly Charges")
     return fig
 
-def tenure_distribution_chart(df):
-    df, churn_col = normalize_churn_column(df)
-    grouped_df = df.groupby(['tenure', churn_col]).size().reset_index(name='Count')
-    fig = px.line(
-        grouped_df, x="tenure", y="Count", color=churn_col,
-        title="Churn by Tenure",
-        labels={"tenure": "Tenure (Months)", "Count": "Churn Count", churn_col: "Churn Status"},
-        color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders={churn_col: ["No", "Yes"]},
-    )
-    fig.update_layout(**get_base_layout(), height=400)
-    fig.update_traces(mode='lines+markers', line=dict(width=2))
-    fig.update_xaxes(title_text="Tenure (Months)")
-    fig.update_yaxes(title_text="Churn Count")
-    return fig
 
 def internet_service_churn_chart(df):
     df, churn_col = normalize_churn_column(df)
