@@ -74,7 +74,7 @@ Pre-requisites:
 
 Setup:
 
-git clone https://github.com/your-username/telco-churn-dashboard.git
+git clone https://github.com/Rizm10/Customer_churn_dashboard.git
 cd telco-churn-dashboard
 pip install -r requirements.txt
 streamlit run app.py
