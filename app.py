@@ -72,7 +72,6 @@ def main():
             "Churn Distribution",
             "Churn by Contract Type",
             "Monthly Charges by Churn Status",
-            "Tenure Distribution",
             "Internet Service vs Churn"
         ],
         default=["Churn Distribution", "Churn by Contract Type"]
@@ -82,7 +81,6 @@ def main():
         "Churn Distribution": churn_distribution_chart,
         "Churn by Contract Type": churn_bycontract_chart,
         "Monthly Charges by Churn Status": monthly_charges_chart,
-        "Tenure Distribution": tenure_distribution_chart,
         "Internet Service vs Churn": internet_service_churn_chart
     }
 
