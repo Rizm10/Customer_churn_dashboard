@@ -1,8 +1,8 @@
-from style import BACKGROUND, TEXT_COLOR_PRIMARY, TEXT_COLOR_SECONDARY, PRIMARY_COLOR, FONT_FAMILY , SECONDARY_COLOR ,NEGATIVE_COLOR
-
-import streamlit as st
 import plotly.express as px
-
+from style import (
+    BACKGROUND, TEXT_COLOR_PRIMARY, TEXT_COLOR_SECONDARY,
+    PRIMARY_COLOR, FONT_FAMILY, SECONDARY_COLOR
+)
 
 def get_base_layout():
     return {
@@ -11,23 +11,17 @@ def get_base_layout():
         "font": {
             "color": TEXT_COLOR_PRIMARY,
             "family": FONT_FAMILY,
-            "size": 14,},
-        
-       "title":{
+            "size": 14,
+        },
+        "title": {
             "font": {
                 "family": FONT_FAMILY,
                 "color": TEXT_COLOR_PRIMARY,
-                "size": 18 
-
-        } },
-        "margin": {
-            "l": 60,
-            "r": 40,
-            "t": 40,
-            "b": 40
-        
+                "size": 18
+            }
         },
-       "xaxis": {
+        "margin": {"l": 60, "r": 40, "t": 40, "b": 40},
+        "xaxis": {
             "gridcolor": TEXT_COLOR_SECONDARY,
             "zerolinecolor": TEXT_COLOR_SECONDARY,
             "showline": True,
@@ -48,71 +42,70 @@ def get_base_layout():
             "bgcolor": BACKGROUND,
             "bordercolor": TEXT_COLOR_SECONDARY,
             "borderwidth": 1
+        }
+    }
 
-    }}
-
+def normalize_churn_column(df):
+    churn_col = next((col for col in df.columns if col.lower() == "churn"), None)
+    if churn_col is None:
+        raise ValueError("Churn column not found.")
+    df[churn_col] = df[churn_col].astype(str).str.strip().str.lower().replace({"0": "no", "1": "yes"})
+    df[churn_col] = df[churn_col].str.capitalize()
+    return df, churn_col
 
 def churn_distribution_chart(df):
+    df, churn_col = normalize_churn_column(df)
     fig = px.pie(
-        df,
-        names="Churn",
-        color="Churn",
-        title=" Churn Distribution",
-        labels={"Churn": "Churn Status"},
+        df, names=churn_col, color=churn_col,
+        title="Churn Distribution",
+        labels={churn_col: "Churn Status"},
         color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders={"Churn": ["No", "Yes"]},
+        category_orders={churn_col: ["No", "Yes"]},
     )
     fig.update_layout(**get_base_layout(), height=400)
     fig.update_traces(textinfo='percent+label', pull=[0.1, 0.1])
     return fig
 
 def churn_bycontract_chart(df):
+    df, churn_col = normalize_churn_column(df)
     fig = px.bar(
-        df,
-        x= "Contract",
-        y = "Churn",
-        color="Churn",
-        title = "Churn by Contract Type",
-        labels={"Contract": "Contract Type", "Churn": "Churn Count"},
+        df, x="Contract", color=churn_col,
+        title="Churn by Contract Type",
+        labels={"Contract": "Contract Type", churn_col: "Churn Status"},
         color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders = {"Churn": ["No", "Yes"]},
-        barmode="group")
+        category_orders={churn_col: ["No", "Yes"]},
+        barmode="group"
+    )
     fig.update_layout(**get_base_layout(), height=400)
     fig.update_traces(texttemplate='%{y}', textposition='outside')
     fig.update_xaxes(title_text="Contract Type")
     fig.update_yaxes(title_text="Churn Count")
     return fig
 
-    
 def monthly_charges_chart(df):
+    df, churn_col = normalize_churn_column(df)
     fig = px.box(
-        df,
-        x="Churn",
-        y= "MonthlyCharges",
-        color="Churn",
-        title = "Monthly charges by Churn Status",
-        labels={"Churn": "Churn Status", "MonthlyCharges": "Monthly Charges"},
+        df, x=churn_col, y="MonthlyCharges", color=churn_col,
+        title="Monthly Charges by Churn Status",
+        labels={churn_col: "Churn Status", "MonthlyCharges": "Monthly Charges"},
         color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders={"Churn": ["No", "Yes"]},
-
-        )
+        category_orders={churn_col: ["No", "Yes"]}
+    )
     fig.update_layout(**get_base_layout(), height=400)
     fig.update_traces(boxmean='sd')
     fig.update_xaxes(title_text="Churn Status")
     fig.update_yaxes(title_text="Monthly Charges")
     return fig
-    
+
 def tenure_distribution_chart(df):
-    grouped_df = df.groupby(['tenure', 'Churn']).size().reset_index(name='Count')
+    df, churn_col = normalize_churn_column(df)
+    grouped_df = df.groupby(['tenure', churn_col]).size().reset_index(name='Count')
     fig = px.line(
-        grouped_df,
-        x="tenure",
-        y="Count",
-        color="Churn",
+        grouped_df, x="tenure", y="Count", color=churn_col,
         title="Churn by Tenure",
-        labels={"tenure": "Tenure (Months)", "Count": "Churn Count", "Churn": "Churn Status"},
+        labels={"tenure": "Tenure (Months)", "Count": "Churn Count", churn_col: "Churn Status"},
         color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders={"Churn": ["No", "Yes"]},
+        category_orders={churn_col: ["No", "Yes"]},
     )
     fig.update_layout(**get_base_layout(), height=400)
     fig.update_traces(mode='lines+markers', line=dict(width=2))
@@ -121,16 +114,15 @@ def tenure_distribution_chart(df):
     return fig
 
 def internet_service_churn_chart(df):
-    grouped_df = df.groupby(['InternetService', 'Churn']).size().reset_index(name='Count')
+    df, churn_col = normalize_churn_column(df)
+    grouped_df = df.groupby(['InternetService', churn_col]).size().reset_index(name='Count')
     fig = px.bar(
         grouped_df,
-        x="InternetService",
-        y="Count",
-        color="Churn",
+        x="InternetService", y="Count", color=churn_col,
         title="Churn by Internet Service Type",
-        labels={"InternetService": "Internet Service Type", "Count": "Churn Count", "Churn": "Churn Status"},
+        labels={"InternetService": "Internet Service", "Count": "Churn Count", churn_col: "Churn Status"},
         color_discrete_sequence=[PRIMARY_COLOR, SECONDARY_COLOR],
-        category_orders={"Churn": ["No", "Yes"]},
+        category_orders={churn_col: ["No", "Yes"]},
         barmode="group"
     )
     fig.update_layout(**get_base_layout(), height=400)
